@@ -37,13 +37,15 @@ export default function VideoStudio() {
   };
 
   /**
-   * Aplica un preset de la biblioteca al estado completo
+   * Aplica un preset de la biblioteca al estado
+   * Los presets son modelo-agnósticos: se aplican los movimientos
+   * y se sugieren parámetros técnicos, pero se respeta el modelo activo del usuario
    */
   const aplicarPreset = (preset) => {
     setPresetActivo(preset);
-    setModeloSeleccionado(preset.modelo);
-    setFps(preset.fps);
-    setDuracion(preset.duracion);
+    // Aplicar FPS y duración recomendados del preset
+    setFps(preset.fpsRecomendado);
+    setDuracion(preset.duracionRecomendada);
     // Convertir movimientos del preset al formato interno
     const movimientos = preset.movimientos.map((m, i) => ({
       id: Date.now() + i,
@@ -51,6 +53,8 @@ export default function VideoStudio() {
       peso: m.peso
     }));
     setMovimientosSeleccionados(movimientos);
+    // NO cambiar el modelo: el preset es compatible con múltiples modelos
+    // El usuario mantiene su modelo seleccionado
   };
 
   return (
@@ -60,7 +64,7 @@ export default function VideoStudio() {
         <div>
           <h2 className="text-2xl font-bold text-slate-100">🎬 Video Prompt Studio</h2>
           <p className="text-sm text-slate-400">
-            SVD • AnimateDiff • Kling • Luma • Wan 2.1/2.2 • MiniMax H3 • LTX 2.3 • CogVideoX
+            8 modelos IA • 30+ estilos • Movimientos universales adaptados a cada modelo
           </p>
         </div>
         <button
@@ -145,7 +149,7 @@ export default function VideoStudio() {
           />
 
           {/* Style Library */}
-          <VideoStyleLibrary onApplyPreset={aplicarPreset} />
+          <VideoStyleLibrary onApplyPreset={aplicarPreset} modeloSeleccionado={modeloSeleccionado} />
 
           {/* Model Compatibility */}
           <ModelCompatibility modeloSeleccionado={modeloSeleccionado} />
@@ -154,10 +158,30 @@ export default function VideoStudio() {
 
       {/* Preset activo indicator */}
       {presetActivo && (
-        <div className="mt-6 bg-violet-900/20 border border-violet-800/50 rounded-lg p-3 text-center">
-          <p className="text-sm text-violet-300">
-            🎯 Preset activo: <strong>{presetActivo.nombre}</strong> — {presetActivo.descripcion}
-          </p>
+        <div className="mt-6 bg-violet-900/20 border border-violet-800/50 rounded-lg p-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div>
+              <p className="text-sm text-violet-300">
+                🎯 Preset activo: <strong>{presetActivo.nombre}</strong>
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">{presetActivo.descripcion}</p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs text-slate-500">Compatible con:</span>
+              {presetActivo.modelosCompatibles.map(m => (
+                <span
+                  key={m}
+                  className={`text-[10px] px-1.5 py-0.5 rounded ${
+                    m === modeloSeleccionado
+                      ? 'bg-violet-600 text-white'
+                      : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  {m.toUpperCase()}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

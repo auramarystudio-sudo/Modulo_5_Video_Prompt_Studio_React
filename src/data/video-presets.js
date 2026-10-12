@@ -1,160 +1,379 @@
 /**
  * Presets de video predefinidos para el Video Prompt Studio
- * Incluye configuraciones optimizadas para diferentes estilos de movimiento
- * Soporta: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX-Video 2.3, CogVideoX
+ * Los presets son modelo-agnósticos: un mismo estilo funciona en múltiples modelos
+ * Cada preset incluye parámetros técnicos recomendados que se adaptan al modelo activo
+ * 
+ * Categorías:
+ * - cinematic: Movimientos cinematográficos clásicos
+ * - documentary: Estilos documentales y orgánicos
+ * - transition: Movimientos tipo transición energética
+ * - atmospheric: Movimientos sutiles y ambientales
+ * - dramatic: Movimientos dramáticos y épicos
+ * - experimental: Estilos creativos y no convencionales
  */
 
+// ═══════════════════════════════════════════════════════════
+// CATEGORÍAS DE ESTILOS
+// ═══════════════════════════════════════════════════════════
+export const STYLE_CATEGORIES = [
+  { id: 'all', nombre: 'Todos', icono: '🎬' },
+  { id: 'cinematic', nombre: 'Cinemático', icono: '🎥' },
+  { id: 'documentary', nombre: 'Documental', icono: '📹' },
+  { id: 'transition', nombre: 'Transición', icono: '⚡' },
+  { id: 'atmospheric', nombre: 'Atmosférico', icono: '🌫️' },
+  { id: 'dramatic', nombre: 'Dramático', icono: '🔥' },
+  { id: 'experimental', nombre: 'Experimental', icono: '🧪' }
+];
+
+// ═══════════════════════════════════════════════════════════
+// PRESETS DE ESTILO
+// ═══════════════════════════════════════════════════════════
 export const VIDEO_STYLE_PRESETS = [
+  // ─── CINEMÁTICOS ───────────────────────────────────────
   {
     id: 'cinematic-pan',
     nombre: 'Pan Cinemático',
-    descripcion: 'Movimiento lateral suave estilo película',
+    descripcion: 'Paneo lateral suave estilo película de autor',
+    categoria: 'cinematic',
     movimientos: [{ tipo: 'pan_left', peso: 1.0 }],
-    fps: 6,
-    duracion: 4,
-    modelo: 'svd',
-    motionBucketId: 127
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
   },
   {
     id: 'slow-zoom-in',
     nombre: 'Zoom Lento Entrada',
-    descripcion: 'Acercamiento gradual al sujeto',
+    descripcion: 'Acercamiento gradual y contemplativo al sujeto',
+    categoria: 'cinematic',
     movimientos: [{ tipo: 'zoom_in', peso: 0.8 }],
-    fps: 6,
-    duracion: 4,
-    modelo: 'svd',
-    motionBucketId: 100
-  },
-  {
-    id: 'timelapse-clouds',
-    nombre: 'Time-lapse Nubes',
-    descripcion: 'Nubes en movimiento rápido',
-    movimientos: [{ tipo: 'static', peso: 1.0 }],
-    fps: 12,
-    duracion: 4,
-    modelo: 'animatediff',
-    motionBucketId: 0
-  },
-  {
-    id: 'handheld-shake',
-    nombre: 'Cámara en Mano',
-    descripcion: 'Movimiento orgánico tipo documental',
-    movimientos: [{ tipo: 'pan_right', peso: 0.3 }, { tipo: 'tilt_up', peso: 0.2 }],
-    fps: 8,
-    duracion: 4,
-    modelo: 'animatediff',
-    motionBucketId: 0
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
   },
   {
     id: 'epic-dolly',
     nombre: 'Dolly Épico',
-    descripcion: 'Acercamiento dramático cinematográfico',
+    descripcion: 'Acercamiento dramático cinematográfico tipo Spielberg',
+    categoria: 'cinematic',
     movimientos: [{ tipo: 'dolly_forward', peso: 1.2 }],
-    fps: 6,
-    duracion: 6,
-    modelo: 'kling',
-    motionBucketId: 0
-  },
-  {
-    id: 'orbit-left',
-    nombre: 'Orbital Izquierda',
-    descripcion: 'Movimiento orbital alrededor del sujeto',
-    movimientos: [{ tipo: 'pan_left', peso: 0.6 }, { tipo: 'dolly_forward', peso: 0.4 }],
-    fps: 8,
-    duracion: 6,
-    modelo: 'kling',
-    motionBucketId: 0
+    fpsRecomendado: 8,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
   },
   {
     id: 'crane-up',
     nombre: 'Grúa Ascendente',
-    descripcion: 'Plano aéreo estilo grúa ascendente',
+    descripcion: 'Plano aéreo estilo grúa revelando paisaje',
+    categoria: 'cinematic',
     movimientos: [{ tipo: 'tilt_up', peso: 0.7 }, { tipo: 'zoom_out', peso: 0.5 }],
-    fps: 6,
-    duracion: 5,
-    modelo: 'svd',
-    motionBucketId: 110
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
   },
+  {
+    id: 'orbit-around',
+    nombre: 'Orbital 360°',
+    descripcion: 'Movimiento orbital alrededor del sujeto principal',
+    categoria: 'cinematic',
+    movimientos: [{ tipo: 'pan_left', peso: 0.6 }, { tipo: 'dolly_forward', peso: 0.4 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 6,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
+  },
+  {
+    id: 'vertigo-effect',
+    nombre: 'Efecto Vértigo',
+    descripcion: 'Dolly zoom: avance + retroceso simultáneo (Hitchcock)',
+    categoria: 'cinematic',
+    movimientos: [{ tipo: 'dolly_forward', peso: 0.8 }, { tipo: 'zoom_out', peso: 0.9 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
+  },
+  {
+    id: 'tracking-shot',
+    nombre: 'Plano Secuencia',
+    descripcion: 'Seguimiento lateral del sujeto en movimiento',
+    categoria: 'cinematic',
+    movimientos: [{ tipo: 'pan_right', peso: 0.9 }, { tipo: 'dolly_forward', peso: 0.3 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
+  },
+
+  // ─── DOCUMENTALES ──────────────────────────────────────
+  {
+    id: 'handheld-shake',
+    nombre: 'Cámara en Mano',
+    descripcion: 'Movimiento orgánico e inestable tipo documental',
+    categoria: 'documentary',
+    movimientos: [{ tipo: 'pan_right', peso: 0.3 }, { tipo: 'tilt_up', peso: 0.2 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['animatediff', 'svd', 'wan', 'ltx', 'cogvideo']
+  },
+  {
+    id: 'interview-static',
+    nombre: 'Entrevista Estática',
+    descripcion: 'Cámara fija tipo entrevista con micro-movimientos',
+    categoria: 'documentary',
+    movimientos: [{ tipo: 'static', peso: 1.0 }, { tipo: 'zoom_in', peso: 0.1 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo', 'animatediff']
+  },
+  {
+    id: 'observational-pan',
+    nombre: 'Paneo Observacional',
+    descripcion: 'Paneo lento observando una escena con naturalidad',
+    categoria: 'documentary',
+    movimientos: [{ tipo: 'pan_left', peso: 0.5 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
+  },
+  {
+    id: 'b-roll-nature',
+    nombre: 'B-Roll Naturaleza',
+    descripcion: 'Toma de apoyo naturalista con movimiento suave',
+    categoria: 'documentary',
+    movimientos: [{ tipo: 'tilt_down', peso: 0.4 }, { tipo: 'pan_right', peso: 0.3 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
+  },
+
+  // ─── TRANSICIONES ──────────────────────────────────────
   {
     id: 'whip-pan',
     nombre: 'Whip Pan',
-    descripcion: 'Paneo rápido tipo transición energética',
+    descripcion: 'Paneo ultra-rápido tipo transición energética',
+    categoria: 'transition',
     movimientos: [{ tipo: 'pan_right', peso: 1.8 }, { tipo: 'dolly_forward', peso: 0.3 }],
-    fps: 12,
-    duracion: 2,
-    modelo: 'animatediff',
-    motionBucketId: 0
+    fpsRecomendado: 12,
+    duracionRecomendada: 2,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling', 'luma']
   },
+  {
+    id: 'zoom-burst',
+    nombre: 'Zoom Burst',
+    descripcion: 'Zoom explosivo rápido tipo transición impactante',
+    categoria: 'transition',
+    movimientos: [{ tipo: 'zoom_in', peso: 1.9 }],
+    fpsRecomendado: 12,
+    duracionRecomendada: 2,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling']
+  },
+  {
+    id: 'reveal-pull-back',
+    nombre: 'Reveal Pull-Back',
+    descripcion: 'Retroceso revelador tipo "y entonces vemos..."',
+    categoria: 'transition',
+    movimientos: [{ tipo: 'dolly_backward', peso: 1.4 }, { tipo: 'zoom_out', peso: 0.6 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 3,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
+  },
+  {
+    id: 'spin-transition',
+    nombre: 'Spin Transition',
+    descripcion: 'Rotación rápida tipo transición creativa',
+    categoria: 'transition',
+    movimientos: [{ tipo: 'roll_clockwise', peso: 1.6 }],
+    fpsRecomendado: 12,
+    duracionRecomendada: 2,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling']
+  },
+  {
+    id: 'crash-zoom',
+    nombre: 'Crash Zoom',
+    descripcion: 'Zoom agresivo repentino tipo Edgar Wright',
+    categoria: 'transition',
+    movimientos: [{ tipo: 'zoom_in', peso: 2.0 }, { tipo: 'dolly_forward', peso: 1.0 }],
+    fpsRecomendado: 16,
+    duracionRecomendada: 1,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling']
+  },
+
+  // ─── ATMOSFÉRICOS ──────────────────────────────────────
   {
     id: 'breathing-cam',
     nombre: 'Cámara Respiración',
-    descripcion: 'Movimiento sutil tipo respiración orgánica',
+    descripcion: 'Movimiento sutil orgánico tipo respiración',
+    categoria: 'atmospheric',
     movimientos: [{ tipo: 'zoom_in', peso: 0.2 }, { tipo: 'tilt_up', peso: 0.1 }],
-    fps: 6,
-    duracion: 4,
-    modelo: 'svd',
-    motionBucketId: 80
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo', 'animatediff']
+  },
+  {
+    id: 'timelapse-clouds',
+    nombre: 'Time-lapse Nubes',
+    descripcion: 'Cielo y nubes en movimiento acelerado',
+    categoria: 'atmospheric',
+    movimientos: [{ tipo: 'static', peso: 1.0 }],
+    fpsRecomendado: 12,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'svd', 'cogvideo']
+  },
+  {
+    id: 'gentle-drift',
+    nombre: 'Deriva Suave',
+    descripcion: 'Flotación lenta etérea tipo sueño',
+    categoria: 'atmospheric',
+    movimientos: [{ tipo: 'tilt_up', peso: 0.3 }, { tipo: 'dolly_forward', peso: 0.2 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
   },
   {
     id: 'macro-focus-shift',
     nombre: 'Cambio de Foco Macro',
     descripcion: 'Transición de enfoque en fotografía macro',
+    categoria: 'atmospheric',
     movimientos: [{ tipo: 'dolly_forward', peso: 0.5 }, { tipo: 'zoom_in', peso: 0.3 }],
-    fps: 8,
-    duracion: 4,
-    modelo: 'luma',
-    motionBucketId: 0
-  },
-  // ═══ Nuevos presets para modelos adicionales ═══
-  {
-    id: 'wan-cinematic-drift',
-    nombre: 'Wan Cinematic Drift',
-    descripcion: 'Movimiento cinematográfico fluido optimizado para Wan 2.2',
-    movimientos: [{ tipo: 'dolly_forward', peso: 0.7 }, { tipo: 'pan_left', peso: 0.4 }],
-    fps: 24,
-    duracion: 5,
-    modelo: 'wan',
-    motionBucketId: 0
+    fpsRecomendado: 8,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
   },
   {
-    id: 'minimax-first-last',
-    nombre: 'MiniMax First→Last',
-    descripcion: 'Transición first-to-last frame optimizada para MiniMax H3',
-    movimientos: [{ tipo: 'zoom_in', peso: 0.6 }, { tipo: 'tilt_up', peso: 0.3 }],
-    fps: 24,
-    duracion: 5,
-    modelo: 'minimax',
-    motionBucketId: 0
+    id: 'ambient-pan',
+    nombre: 'Paneo Ambiental',
+    descripcion: 'Paneo ultra-lento explorando ambiente',
+    categoria: 'atmospheric',
+    movimientos: [{ tipo: 'pan_left', peso: 0.3 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 6,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
   },
   {
-    id: 'ltx-long-take',
-    nombre: 'LTX Toma Larga',
-    descripcion: 'Toma continua larga aprovechando capacidad de LTX 2.3',
-    movimientos: [{ tipo: 'dolly_forward', peso: 0.5 }, { tipo: 'pan_right', peso: 0.3 }],
-    fps: 24,
-    duracion: 10,
-    modelo: 'ltx',
-    motionBucketId: 0
+    id: 'fog-reveal',
+    nombre: 'Revelación en Niebla',
+    descripcion: 'Avance lento entre niebla revelando escena',
+    categoria: 'atmospheric',
+    movimientos: [{ tipo: 'dolly_forward', peso: 0.4 }, { tipo: 'tilt_down', peso: 0.2 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
+  },
+
+  // ─── DRAMÁTICOS ────────────────────────────────────────
+  {
+    id: 'hero-approach',
+    nombre: 'Aproximación Heroica',
+    descripcion: 'Avance imponente hacia el protagonista',
+    categoria: 'dramatic',
+    movimientos: [{ tipo: 'dolly_forward', peso: 1.3 }, { tipo: 'tilt_up', peso: 0.4 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
   },
   {
-    id: 'cogvideo-smooth',
-    nombre: 'CogVideo Suave',
-    descripcion: 'Movimiento suave y estable para CogVideoX',
-    movimientos: [{ tipo: 'zoom_in', peso: 0.4 }, { tipo: 'static', peso: 0.3 }],
-    fps: 8,
-    duracion: 6,
-    modelo: 'cogvideo',
-    motionBucketId: 0
+    id: 'ominous-tilt',
+    nombre: 'Inclinación Siniestra',
+    descripcion: 'Tilt descendente amenazante tipo villano',
+    categoria: 'dramatic',
+    movimientos: [{ tipo: 'tilt_down', peso: 1.2 }, { tipo: 'zoom_in', peso: 0.5 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
   },
   {
-    id: 'wan-epic-zoom',
-    nombre: 'Wan Zoom Épico',
-    descripcion: 'Zoom dramático de alta calidad con Wan 2.1 14B',
-    movimientos: [{ tipo: 'zoom_in', peso: 1.5 }],
-    fps: 24,
-    duracion: 4,
-    modelo: 'wan',
-    motionBucketId: 0
+    id: 'epic-reveal',
+    nombre: 'Revelación Épica',
+    descripcion: 'Retroceso + tilt up revelando paisaje grandioso',
+    categoria: 'dramatic',
+    movimientos: [{ tipo: 'dolly_backward', peso: 1.0 }, { tipo: 'tilt_up', peso: 0.8 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
+  },
+  {
+    id: 'tension-zoom',
+    nombre: 'Zoom de Tensión',
+    descripcion: 'Zoom lento que genera tensión psicológica',
+    categoria: 'dramatic',
+    movimientos: [{ tipo: 'zoom_in', peso: 1.1 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
+  },
+  {
+    id: 'descent-doom',
+    nombre: 'Descenso Funesto',
+    descripcion: 'Tilt down + zoom out tipo final trágico',
+    categoria: 'dramatic',
+    movimientos: [{ tipo: 'tilt_down', peso: 0.9 }, { tipo: 'zoom_out', peso: 0.7 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
+  },
+
+  // ─── EXPERIMENTALES ────────────────────────────────────
+  {
+    id: 'dutch-angle-roll',
+    nombre: 'Dutch Angle Roll',
+    descripcion: 'Rotación tipo ángulo holandés inquietante',
+    categoria: 'experimental',
+    movimientos: [{ tipo: 'roll_clockwise', peso: 0.8 }, { tipo: 'tilt_up', peso: 0.3 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 3,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'animatediff']
+  },
+  {
+    id: 'chaos-multi',
+    nombre: 'Caos Multidireccional',
+    descripcion: 'Múltiples movimientos simultáneos caóticos',
+    categoria: 'experimental',
+    movimientos: [
+      { tipo: 'pan_left', peso: 0.5 },
+      { tipo: 'tilt_up', peso: 0.4 },
+      { tipo: 'zoom_in', peso: 0.6 },
+      { tipo: 'roll_counter', peso: 0.3 }
+    ],
+    fpsRecomendado: 12,
+    duracionRecomendada: 3,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx']
+  },
+  {
+    id: 'hypnotic-spiral',
+    nombre: 'Espiral Hipnótica',
+    descripcion: 'Rotación + zoom creando efecto hipnótico',
+    categoria: 'experimental',
+    movimientos: [{ tipo: 'roll_clockwise', peso: 1.0 }, { tipo: 'zoom_in', peso: 0.7 }],
+    fpsRecomendado: 8,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'animatediff']
+  },
+  {
+    id: 'glitch-pan',
+    nombre: 'Glitch Paneo',
+    descripcion: 'Paneo con intención de glitch digital',
+    categoria: 'experimental',
+    movimientos: [{ tipo: 'pan_right', peso: 1.5 }, { tipo: 'roll_clockwise', peso: 0.4 }],
+    fpsRecomendado: 16,
+    duracionRecomendada: 2,
+    modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling']
+  },
+  {
+    id: 'dream-dissolve',
+    nombre: 'Disolución Onírica',
+    descripcion: 'Movimiento flotante tipo transición de sueño',
+    categoria: 'experimental',
+    movimientos: [{ tipo: 'zoom_out', peso: 0.4 }, { tipo: 'roll_counter', peso: 0.3 }, { tipo: 'tilt_up', peso: 0.2 }],
+    fpsRecomendado: 6,
+    duracionRecomendada: 5,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
+  },
+  {
+    id: 'first-person',
+    nombre: 'Primera Persona',
+    descripcion: 'Simulación de cámara subjetiva POV',
+    categoria: 'experimental',
+    movimientos: [{ tipo: 'dolly_forward', peso: 0.7 }, { tipo: 'pan_right', peso: 0.3 }, { tipo: 'tilt_down', peso: 0.2 }],
+    fpsRecomendado: 12,
+    duracionRecomendada: 4,
+    modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
   }
 ];
 
@@ -211,7 +430,6 @@ export const VIDEO_MODELS = [
     fpsNativo: 12,
     resolucion: '1280×720'
   },
-  // ═══ Nuevos modelos ═══
   {
     id: 'wan',
     nombre: 'Wan 2.1 / 2.2',
