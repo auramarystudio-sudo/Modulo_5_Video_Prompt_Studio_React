@@ -2,6 +2,7 @@
  * VideoStudio - Componente principal del Video Prompt Studio
  * Layout 2 columnas: izquierda (70%) con Motion Builder + Keyframes + Output
  * Derecha (30%) con Calculator + Style Library + Model Compatibility
+ * Soporta 8 modelos: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX 2.3, CogVideoX
  */
 import { useState } from 'react';
 import MotionBuilder from './MotionBuilder';
@@ -10,7 +11,7 @@ import VideoCalculator from './VideoCalculator';
 import VideoStyleLibrary from './VideoStyleLibrary';
 import ModelCompatibility from './ModelCompatibility';
 import VideoOutput from './VideoOutput';
-import { getFpsRecomendado } from '../../utils/video-calculator';
+import { getFpsRecomendado, getDuracionRecomendada } from '../../utils/video-calculator';
 
 export default function VideoStudio() {
   // ═══ Estado global del Video Studio ═══
@@ -59,7 +60,7 @@ export default function VideoStudio() {
         <div>
           <h2 className="text-2xl font-bold text-slate-100">🎬 Video Prompt Studio</h2>
           <p className="text-sm text-slate-400">
-            Generación de video IA: SVD, AnimateDiff, Kling, Luma
+            SVD • AnimateDiff • Kling • Luma • Wan 2.1/2.2 • MiniMax H3 • LTX 2.3 • CogVideoX
           </p>
         </div>
         <button

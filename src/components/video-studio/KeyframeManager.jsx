@@ -58,7 +58,8 @@ export default function KeyframeManager({
   };
 
   // Verificar si el modelo soporta keyframes duales
-  const soportaDualKeyframes = modeloSeleccionado !== 'animatediff';
+  // AnimateDiff y CogVideoX solo soportan un prompt
+  const soportaDualKeyframes = modeloSeleccionado !== 'animatediff' && modeloSeleccionado !== 'cogvideo';
 
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
@@ -67,9 +68,9 @@ export default function KeyframeManager({
         <h3 className="text-lg font-semibold text-emerald-300 flex items-center gap-2">
           🎞️ Keyframe Manager
         </h3>
-        {modeloSeleccionado === 'animatediff' && (
+        {(modeloSeleccionado === 'animatediff' || modeloSeleccionado === 'cogvideo') && (
           <span className="text-xs bg-orange-900/50 text-orange-300 px-2 py-1 rounded border border-orange-700">
-            ⚠️ AnimateDiff: usa solo 1 prompt
+            ⚠️ {modeloSeleccionado === 'animatediff' ? 'AnimateDiff' : 'CogVideoX'}: usa solo 1 prompt
           </span>
         )}
       </div>

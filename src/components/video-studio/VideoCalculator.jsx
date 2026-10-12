@@ -2,9 +2,22 @@
  * VideoCalculator - Calculadora técnica interactiva de video IA
  * Muestra en tiempo real: frames totales, motion bucket, VRAM estimada
  * con alertas si se exceden los límites recomendados
+ * Soporta 8 modelos: SVD, AnimateDiff, Kling, Luma, Wan, MiniMax H3, LTX 2.3, CogVideoX
  */
 import { calcularParametrosVideo, getVramColorClass, getVramLevel, getFpsRecomendado } from '../../utils/video-calculator';
 import { AlertTriangle, Cpu, Clock, HardDrive } from 'lucide-react';
+
+// Lista de todos los modelos disponibles
+const MODELOS = [
+  { id: 'svd', label: 'SVD', color: 'blue' },
+  { id: 'animatediff', label: 'AD', color: 'green' },
+  { id: 'kling', label: 'Kling', color: 'purple' },
+  { id: 'luma', label: 'Luma', color: 'pink' },
+  { id: 'wan', label: 'Wan', color: 'cyan' },
+  { id: 'minimax', label: 'H3', color: 'amber' },
+  { id: 'ltx', label: 'LTX', color: 'rose' },
+  { id: 'cogvideo', label: 'CogV', color: 'teal' }
+];
 
 export default function VideoCalculator({ fps, setFps, duracion, setDuracion, modeloSeleccionado, setModeloSeleccionado }) {
   // Calcular parámetros en tiempo real
@@ -21,6 +34,11 @@ export default function VideoCalculator({ fps, setFps, duracion, setDuracion, mo
   // Porcentaje de uso de VRAM para la barra visual (max 48GB como referencia)
   const vramPorcentaje = Math.min(100, (params.vramEstimadaGB / 48) * 100);
 
+  // FPS máximo según modelo
+  const fpsMax = modeloSeleccionado === 'cogvideo' ? 8 : 
+                 modeloSeleccionado === 'svd' ? 24 : 
+                 modeloSeleccionado === 'animatediff' ? 24 : 30;
+
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
       {/* Header */}
@@ -30,24 +48,33 @@ export default function VideoCalculator({ fps, setFps, duracion, setDuracion, mo
 
       {/* Selectores */}
       <div className="space-y-4 mb-5">
-        {/* Modelo */}
+        {/* Modelo - Grid 4x2 para 8 modelos */}
         <div>
           <label className="block text-sm text-slate-400 mb-1">Modelo</label>
-          <div className="grid grid-cols-2 gap-1.5">
-            {['svd', 'animatediff', 'kling', 'luma'].map(modelo => (
+          <div className="grid grid-cols-4 gap-1.5">
+            {MODELOS.map(modelo => (
               <button
-                key={modelo}
-                onClick={() => cambiarModelo(modelo)}
-                className={`px-2 py-1.5 rounded-lg text-xs font-medium transition-all ${
-                  modeloSeleccionado === modelo
-                    ? 'bg-violet-600 text-white border border-violet-400'
-                    : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-violet-600'
+                key={modelo.id}
+                onClick={() => cambiarModelo(modelo.id)}
+                className={`px-1.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                  modeloSeleccionado === modelo.id
+                    ? 'bg-violet-600 text-white border border-violet-400 shadow-lg shadow-violet-500/20'
+                    : 'bg-slate-800 text-slate-400 border border-slate-700 hover:border-violet-600 hover:text-slate-200'
                 }`}
               >
-                {modelo.toUpperCase()}
+                {modelo.label}
               </button>
             ))}
           </div>
+          {/* Nombre completo del modelo seleccionado */}
+          <p className="text-xs text-slate-500 mt-1.5 text-center">
+            {MODELOS.find(m => m.id === modeloSeleccionado)?.label === 'AD' ? 'AnimateDiff' :
+             MODELOS.find(m => m.id === modeloSeleccionado)?.label === 'H3' ? 'MiniMax H3' :
+             MODELOS.find(m => m.id === modeloSeleccionado)?.label === 'LTX' ? 'LTX-Video 2.3' :
+             MODELOS.find(m => m.id === modeloSeleccionado)?.label === 'CogV' ? 'CogVideoX' :
+             MODELOS.find(m => m.id === modeloSeleccionado)?.label === 'Wan' ? 'Wan 2.1 / 2.2' :
+             MODELOS.find(m => m.id === modeloSeleccionado)?.label}
+          </p>
         </div>
 
         {/* FPS Slider */}
@@ -59,14 +86,14 @@ export default function VideoCalculator({ fps, setFps, duracion, setDuracion, mo
           <input
             type="range"
             min="1"
-            max="24"
-            value={fps}
+            max={fpsMax}
+            value={Math.min(fps, fpsMax)}
             onChange={(e) => setFps(parseInt(e.target.value))}
             className="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-violet-500"
           />
           <div className="flex justify-between text-xs text-slate-500 mt-0.5">
             <span>1</span>
-            <span>24</span>
+            <span>{fpsMax}</span>
           </div>
         </div>
 
@@ -156,7 +183,7 @@ export default function VideoCalculator({ fps, setFps, duracion, setDuracion, mo
           <AlertTriangle size={16} className="text-orange-400 mt-0.5 flex-shrink-0" />
           <p className="text-xs text-orange-300">
             ⚠️ Excede límite recomendado de <strong>{params.maxFramesRecomendado}</strong> frames para{' '}
-            <strong>{modeloSeleccionado.toUpperCase()}</strong>. Reduce duración o FPS.
+            <strong>{MODELOS.find(m => m.id === modeloSeleccionado)?.label}</strong>. Reduce duración o FPS.
           </p>
         </div>
       )}

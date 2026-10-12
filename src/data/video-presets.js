@@ -1,6 +1,7 @@
 /**
  * Presets de video predefinidos para el Video Prompt Studio
  * Incluye configuraciones optimizadas para diferentes estilos de movimiento
+ * Soporta: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX-Video 2.3, CogVideoX
  */
 
 export const VIDEO_STYLE_PRESETS = [
@@ -103,11 +104,63 @@ export const VIDEO_STYLE_PRESETS = [
     duracion: 4,
     modelo: 'luma',
     motionBucketId: 0
+  },
+  // ═══ Nuevos presets para modelos adicionales ═══
+  {
+    id: 'wan-cinematic-drift',
+    nombre: 'Wan Cinematic Drift',
+    descripcion: 'Movimiento cinematográfico fluido optimizado para Wan 2.2',
+    movimientos: [{ tipo: 'dolly_forward', peso: 0.7 }, { tipo: 'pan_left', peso: 0.4 }],
+    fps: 24,
+    duracion: 5,
+    modelo: 'wan',
+    motionBucketId: 0
+  },
+  {
+    id: 'minimax-first-last',
+    nombre: 'MiniMax First→Last',
+    descripcion: 'Transición first-to-last frame optimizada para MiniMax H3',
+    movimientos: [{ tipo: 'zoom_in', peso: 0.6 }, { tipo: 'tilt_up', peso: 0.3 }],
+    fps: 24,
+    duracion: 5,
+    modelo: 'minimax',
+    motionBucketId: 0
+  },
+  {
+    id: 'ltx-long-take',
+    nombre: 'LTX Toma Larga',
+    descripcion: 'Toma continua larga aprovechando capacidad de LTX 2.3',
+    movimientos: [{ tipo: 'dolly_forward', peso: 0.5 }, { tipo: 'pan_right', peso: 0.3 }],
+    fps: 24,
+    duracion: 10,
+    modelo: 'ltx',
+    motionBucketId: 0
+  },
+  {
+    id: 'cogvideo-smooth',
+    nombre: 'CogVideo Suave',
+    descripcion: 'Movimiento suave y estable para CogVideoX',
+    movimientos: [{ tipo: 'zoom_in', peso: 0.4 }, { tipo: 'static', peso: 0.3 }],
+    fps: 8,
+    duracion: 6,
+    modelo: 'cogvideo',
+    motionBucketId: 0
+  },
+  {
+    id: 'wan-epic-zoom',
+    nombre: 'Wan Zoom Épico',
+    descripcion: 'Zoom dramático de alta calidad con Wan 2.1 14B',
+    movimientos: [{ tipo: 'zoom_in', peso: 1.5 }],
+    fps: 24,
+    duracion: 4,
+    modelo: 'wan',
+    motionBucketId: 0
   }
 ];
 
 /**
- * Modelos de video IA soportados con sus características
+ * Modelos de video IA soportados con sus características técnicas
+ * Datos actualizados 2025-2026
  */
 export const VIDEO_MODELS = [
   {
@@ -118,7 +171,9 @@ export const VIDEO_MODELS = [
     vramMinima: 8,
     soportaKeyframes: true,
     motionControl: 'Nativo',
-    calidadTemporal: 'Media'
+    calidadTemporal: 'Media',
+    fpsNativo: 6,
+    resolucion: '1024×576'
   },
   {
     id: 'animatediff',
@@ -128,7 +183,9 @@ export const VIDEO_MODELS = [
     vramMinima: 8,
     soportaKeyframes: false,
     motionControl: 'Limitado',
-    calidadTemporal: 'Alta'
+    calidadTemporal: 'Alta',
+    fpsNativo: 8,
+    resolucion: '512×512'
   },
   {
     id: 'kling',
@@ -138,7 +195,9 @@ export const VIDEO_MODELS = [
     vramMinima: 16,
     soportaKeyframes: true,
     motionControl: 'Avanzado',
-    calidadTemporal: 'Muy Alta'
+    calidadTemporal: 'Muy Alta',
+    fpsNativo: 12,
+    resolucion: '1280×720'
   },
   {
     id: 'luma',
@@ -148,6 +207,57 @@ export const VIDEO_MODELS = [
     vramMinima: 16,
     soportaKeyframes: true,
     motionControl: 'Avanzado',
-    calidadTemporal: 'Muy Alta'
+    calidadTemporal: 'Muy Alta',
+    fpsNativo: 12,
+    resolucion: '1280×720'
+  },
+  // ═══ Nuevos modelos ═══
+  {
+    id: 'wan',
+    nombre: 'Wan 2.1 / 2.2',
+    abreviatura: 'Wan',
+    maxFrames: 121,
+    vramMinima: 12,
+    soportaKeyframes: true,
+    motionControl: 'Avanzado',
+    calidadTemporal: 'Muy Alta',
+    fpsNativo: 24,
+    resolucion: '1280×720'
+  },
+  {
+    id: 'minimax',
+    nombre: 'MiniMax H3',
+    abreviatura: 'H3',
+    maxFrames: 120,
+    vramMinima: 12,
+    soportaKeyframes: true,
+    motionControl: 'Avanzado',
+    calidadTemporal: 'Muy Alta',
+    fpsNativo: 24,
+    resolucion: '2560×1440'
+  },
+  {
+    id: 'ltx',
+    nombre: 'LTX-Video 2.3',
+    abreviatura: 'LTX',
+    maxFrames: 480,
+    vramMinima: 8,
+    soportaKeyframes: true,
+    motionControl: 'Avanzado',
+    calidadTemporal: 'Muy Alta',
+    fpsNativo: 24,
+    resolucion: '1920×1080'
+  },
+  {
+    id: 'cogvideo',
+    nombre: 'CogVideoX',
+    abreviatura: 'CogV',
+    maxFrames: 49,
+    vramMinima: 12,
+    soportaKeyframes: false,
+    motionControl: 'Limitado',
+    calidadTemporal: 'Alta',
+    fpsNativo: 8,
+    resolucion: '1360×768'
   }
 ];

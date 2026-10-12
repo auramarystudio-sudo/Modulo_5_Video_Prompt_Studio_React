@@ -8,6 +8,18 @@ import { Copy, Rocket, Sparkles, Check } from 'lucide-react';
 import { construirMotionPrompt } from '../../utils/video-motion-tokens';
 import { calcularParametrosVideo } from '../../utils/video-calculator';
 
+// Mapa de nombres legibles para cada modelo
+const MODELO_NOMBRES = {
+  svd: 'SVD (Stable Video Diffusion)',
+  animatediff: 'AnimateDiff',
+  kling: 'Kling AI',
+  luma: 'Luma Dream Machine',
+  wan: 'Wan 2.1 / 2.2',
+  minimax: 'MiniMax H3',
+  ltx: 'LTX-Video 2.3',
+  cogvideo: 'CogVideoX'
+};
+
 export default function VideoOutput({
   promptBase,
   negativePrompt,
@@ -52,7 +64,7 @@ export default function VideoOutput({
     }
     
     bloque += `═══ PARÁMETROS TÉCNICOS ═══\n\n`;
-    bloque += `Modelo: ${modeloSeleccionado.toUpperCase()}\n`;
+    bloque += `Modelo: ${MODELO_NOMBRES[modeloSeleccionado] || modeloSeleccionado}\n`;
     bloque += `FPS: ${fps} | Duración: ${duracion}s | Frames: ${params.framesTotales}\n`;
     
     if (params.motionBucketId > 0) {
@@ -123,7 +135,7 @@ export default function VideoOutput({
         <div className="mb-3 border-t border-slate-800 pt-3">
           <p className="text-xs text-violet-400 font-semibold mb-1">PARÁMETROS TÉCNICOS:</p>
           <div className="text-slate-300 space-y-0.5">
-            <p>Modelo: <span className="text-violet-300">{modeloSeleccionado.toUpperCase()}</span></p>
+            <p>Modelo: <span className="text-violet-300">{MODELO_NOMBRES[modeloSeleccionado] || modeloSeleccionado}</span></p>
             <p>FPS: <span className="text-violet-300">{fps}</span> | Duración: <span className="text-violet-300">{duracion}s</span> | Frames: <span className="text-violet-300">{params.framesTotales}</span></p>
             {params.motionBucketId > 0 && (
               <p>Motion Bucket ID: <span className="text-violet-300">{params.motionBucketId}</span></p>

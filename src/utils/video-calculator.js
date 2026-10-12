@@ -1,13 +1,14 @@
 /**
  * Calculadora técnica de parámetros de video IA
  * Calcula frames, VRAM, motion bucket y alertas según modelo y configuración
+ * Soporta: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX-Video 2.3, CogVideoX
  */
 
 /**
  * Calcula todos los parámetros técnicos de video según FPS, duración y modelo
  * @param {number} fps - Frames por segundo
  * @param {number} duracion - Duración en segundos
- * @param {string} modelo - Modelo seleccionado (svd, animatediff, kling, luma)
+ * @param {string} modelo - Modelo seleccionado
  * @returns {Object} - Parámetros calculados
  */
 export function calcularParametrosVideo(fps, duracion, modelo) {
@@ -38,6 +39,55 @@ export function calcularParametrosVideo(fps, duracion, modelo) {
       motionBucketId = 0; // No aplica
       vramEstimadaGB = framesTotales > 60 ? 24 : 16;
       maxFramesRecomendado = 180;
+      break;
+    case 'wan':
+      // Wan 2.1/2.2: 5B necesita 12GB, 14B necesita 24-80GB
+      // Usamos referencia del modelo 5B (más accesible)
+      motionBucketId = 0;
+      if (framesTotales > 80) {
+        vramEstimadaGB = 24; // 14B con muchos frames
+      } else if (framesTotales > 40) {
+        vramEstimadaGB = 16;
+      } else {
+        vramEstimadaGB = 12; // 5B baseline
+      }
+      maxFramesRecomendado = 121; // ~5s a 24fps
+      break;
+    case 'minimax':
+      // MiniMax H3: Nativo 2K, 5-15s a 24fps
+      motionBucketId = 0;
+      if (framesTotales > 120) {
+        vramEstimadaGB = 24;
+      } else {
+        vramEstimadaGB = 12;
+      }
+      maxFramesRecomendado = 120; // 5s a 24fps
+      break;
+    case 'ltx':
+      // LTX-Video 2.3: Hasta 480 frames, 8GB mínimo (quantizado)
+      motionBucketId = 0;
+      if (framesTotales > 240) {
+        vramEstimadaGB = 32; // 1080p largo
+      } else if (framesTotales > 120) {
+        vramEstimadaGB = 16;
+      } else if (framesTotales > 48) {
+        vramEstimadaGB = 12;
+      } else {
+        vramEstimadaGB = 8; // Quantizado, corto
+      }
+      maxFramesRecomendado = 480; // 20s a 24fps
+      break;
+    case 'cogvideo':
+      // CogVideoX: 2B = 4-12GB, 5B = 12-24GB, max 49 frames recomendado
+      motionBucketId = 0;
+      if (framesTotales > 49) {
+        vramEstimadaGB = 24; // 5B con muchos frames
+      } else if (framesTotales > 25) {
+        vramEstimadaGB = 16;
+      } else {
+        vramEstimadaGB = 12; // 5B baseline
+      }
+      maxFramesRecomendado = 49; // Recomendado por el equipo oficial
       break;
     default:
       motionBucketId = 127;
@@ -90,6 +140,29 @@ export function getFpsRecomendado(modelo) {
     case 'animatediff': return 8;
     case 'kling': return 12;
     case 'luma': return 12;
+    case 'wan': return 24;
+    case 'minimax': return 24;
+    case 'ltx': return 24;
+    case 'cogvideo': return 8;
     default: return 6;
+  }
+}
+
+/**
+ * Duración recomendada por defecto según modelo
+ * @param {string} modelo - Modelo seleccionado
+ * @returns {number} - Duración en segundos
+ */
+export function getDuracionRecomendada(modelo) {
+  switch (modelo) {
+    case 'svd': return 4;
+    case 'animatediff': return 2;
+    case 'kling': return 5;
+    case 'luma': return 5;
+    case 'wan': return 5;
+    case 'minimax': return 5;
+    case 'ltx': return 10;
+    case 'cogvideo': return 6;
+    default: return 4;
   }
 }
