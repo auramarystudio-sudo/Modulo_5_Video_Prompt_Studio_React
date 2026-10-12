@@ -1,12 +1,13 @@
 /**
  * VideoOutput - Output final formateado del prompt de video
- * Muestra el prompt completo con todos los parámetros técnicos
- * y botones para copiar, enviar a ComfyUI o convertir a prompt estático
+ * Muestra el prompt completo con: plano de cámara + movimiento + parámetros técnicos
+ * Botones para copiar, enviar a ComfyUI o convertir a prompt estático
  */
 import { useState } from 'react';
 import { Copy, Rocket, Sparkles, Check } from 'lucide-react';
 import { construirMotionPrompt } from '../../utils/video-motion-tokens';
 import { calcularParametrosVideo } from '../../utils/video-calculator';
+import { obtenerTokenPlano, SHOT_TYPES } from '../../utils/camera-framing';
 
 // Mapa de nombres legibles para cada modelo
 const MODELO_NOMBRES = {
@@ -24,6 +25,7 @@ export default function VideoOutput({
   promptBase,
   negativePrompt,
   movimientosSeleccionados,
+  planoSeleccionado,
   keyframeInicial,
   keyframeFinal,
   fps,
@@ -39,16 +41,22 @@ export default function VideoOutput({
   // Construir tokens de movimiento
   const motionTokens = construirMotionPrompt(movimientosSeleccionados, modeloSeleccionado);
   
+  // Token del plano de cámara
+  const shotToken = planoSeleccionado ? obtenerTokenPlano(planoSeleccionado, modeloSeleccionado) : '';
+  
+  // Combinar plano + movimiento
+  const cameraTokens = [shotToken, motionTokens].filter(Boolean).join(', ');
+  
   // Prompt de video completo
   const promptVideo = promptBase
-    ? motionTokens
-      ? `${promptBase}, ${motionTokens}`
+    ? cameraTokens
+      ? `${promptBase}, ${cameraTokens}`
       : promptBase
     : keyframeInicial || 'Sin prompt definido';
 
   // Prompt estático optimizado (para convertir a imagen fija)
   const promptEstatico = promptBase
-    ? `${promptBase}, ${motionTokens}, still frame, high detail, masterpiece, best quality`
+    ? `${promptBase}, ${cameraTokens}, still frame, high detail, masterpiece, best quality`
     : 'Sin prompt base definido';
 
   /**
@@ -65,6 +73,12 @@ export default function VideoOutput({
     
     bloque += `═══ PARÁMETROS TÉCNICOS ═══\n\n`;
     bloque += `Modelo: ${MODELO_NOMBRES[modeloSeleccionado] || modeloSeleccionado}\n`;
+    
+    // Plano de cámara
+    if (planoSeleccionado && SHOT_TYPES[planoSeleccionado]) {
+      bloque += `Plano: ${SHOT_TYPES[planoSeleccionado].nombre} (${SHOT_TYPES[planoSeleccionado].abreviatura})\n`;
+    }
+    
     bloque += `FPS: ${fps} | Duración: ${duracion}s | Frames: ${params.framesTotales}\n`;
     
     if (params.motionBucketId > 0) {
@@ -96,7 +110,6 @@ export default function VideoOutput({
    * Placeholder: Enviar a ComfyUI
    */
   const enviarAComfyUI = () => {
-    // EN EL FUTURO: Integración con API de ComfyUI
     console.log('Enviando a ComfyUI (placeholder):', generarBloqueCompleto());
     alert('🚀 Integración con ComfyUI - Próximamente disponible');
   };
@@ -136,6 +149,12 @@ export default function VideoOutput({
           <p className="text-xs text-violet-400 font-semibold mb-1">PARÁMETROS TÉCNICOS:</p>
           <div className="text-slate-300 space-y-0.5">
             <p>Modelo: <span className="text-violet-300">{MODELO_NOMBRES[modeloSeleccionado] || modeloSeleccionado}</span></p>
+            
+            {/* Plano de cámara */}
+            {planoSeleccionado && SHOT_TYPES[planoSeleccionado] && (
+              <p>Plano: <span className="text-amber-300">{SHOT_TYPES[planoSeleccionado].nombre}</span> <span className="text-slate-500">({SHOT_TYPES[planoSeleccionado].abreviatura})</span></p>
+            )}
+            
             <p>FPS: <span className="text-violet-300">{fps}</span> | Duración: <span className="text-violet-300">{duracion}s</span> | Frames: <span className="text-violet-300">{params.framesTotales}</span></p>
             {params.motionBucketId > 0 && (
               <p>Motion Bucket ID: <span className="text-violet-300">{params.motionBucketId}</span></p>
@@ -155,6 +174,26 @@ export default function VideoOutput({
           </div>
         )}
       </div>
+
+      {/* Resumen visual de composición */}
+      {(planoSeleccionado || movimientosSeleccionados.length > 0) && (
+        <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700 mb-4">
+          <p className="text-xs text-slate-400 font-medium mb-2">Composición:</p>
+          <div className="flex flex-wrap gap-2">
+            {planoSeleccionado && SHOT_TYPES[planoSeleccionado] && (
+              <span className="flex items-center gap-1 text-xs bg-amber-900/30 text-amber-300 border border-amber-700/50 px-2 py-1 rounded">
+                <span>{SHOT_TYPES[planoSeleccionado].icono}</span>
+                {SHOT_TYPES[planoSeleccionado].nombre}
+              </span>
+            )}
+            {movimientosSeleccionados.map(mov => (
+              <span key={mov.id} className="flex items-center gap-1 text-xs bg-violet-900/30 text-violet-300 border border-violet-700/50 px-2 py-1 rounded">
+                {mov.tipo.replace('_', ' ')} ({mov.peso.toFixed(1)})
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Botones de acción */}
       <div className="flex flex-wrap gap-2">
@@ -211,10 +250,8 @@ export default function VideoOutput({
               >
                 Cerrar
               </button>
-              {/* Placeholder: navegar al Módulo 3 */}
               <button
                 onClick={() => {
-                  // EN EL FUTURO: Navegar a /prompts con estado
                   console.log('Enviando a Módulo 3:', promptEstatico);
                   alert('✨ Integración con Módulo 3 - Próximamente disponible');
                   setMostrarModalEstatico(false);

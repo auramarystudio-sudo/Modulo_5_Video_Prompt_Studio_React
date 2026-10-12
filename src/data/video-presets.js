@@ -36,6 +36,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Paneo lateral suave estilo película de autor',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'pan_left', peso: 1.0 }],
+    planoRecomendado: 'wide',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
@@ -46,6 +47,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Acercamiento gradual y contemplativo al sujeto',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'zoom_in', peso: 0.8 }],
+    planoRecomendado: 'medium_close',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
@@ -56,6 +58,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Acercamiento dramático cinematográfico tipo Spielberg',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'dolly_forward', peso: 1.2 }],
+    planoRecomendado: 'full',
     fpsRecomendado: 8,
     duracionRecomendada: 5,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -66,6 +69,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Plano aéreo estilo grúa revelando paisaje',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'tilt_up', peso: 0.7 }, { tipo: 'zoom_out', peso: 0.5 }],
+    planoRecomendado: 'extreme_wide',
     fpsRecomendado: 6,
     duracionRecomendada: 5,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -76,6 +80,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Movimiento orbital alrededor del sujeto principal',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'pan_left', peso: 0.6 }, { tipo: 'dolly_forward', peso: 0.4 }],
+    planoRecomendado: 'full',
     fpsRecomendado: 8,
     duracionRecomendada: 6,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -86,6 +91,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Dolly zoom: avance + retroceso simultáneo (Hitchcock)',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'dolly_forward', peso: 0.8 }, { tipo: 'zoom_out', peso: 0.9 }],
+    planoRecomendado: 'medium',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -96,6 +102,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Seguimiento lateral del sujeto en movimiento',
     categoria: 'cinematic',
     movimientos: [{ tipo: 'pan_right', peso: 0.9 }, { tipo: 'dolly_forward', peso: 0.3 }],
+    planoRecomendado: 'american',
     fpsRecomendado: 8,
     duracionRecomendada: 5,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -108,6 +115,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Movimiento orgánico e inestable tipo documental',
     categoria: 'documentary',
     movimientos: [{ tipo: 'pan_right', peso: 0.3 }, { tipo: 'tilt_up', peso: 0.2 }],
+    planoRecomendado: 'medium',
     fpsRecomendado: 8,
     duracionRecomendada: 4,
     modelosCompatibles: ['animatediff', 'svd', 'wan', 'ltx', 'cogvideo']
@@ -118,6 +126,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Cámara fija tipo entrevista con micro-movimientos',
     categoria: 'documentary',
     movimientos: [{ tipo: 'static', peso: 1.0 }, { tipo: 'zoom_in', peso: 0.1 }],
+    planoRecomendado: 'medium_close',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo', 'animatediff']
@@ -150,6 +159,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Paneo ultra-rápido tipo transición energética',
     categoria: 'transition',
     movimientos: [{ tipo: 'pan_right', peso: 1.8 }, { tipo: 'dolly_forward', peso: 0.3 }],
+    planoRecomendado: 'wide',
     fpsRecomendado: 12,
     duracionRecomendada: 2,
     modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling', 'luma']
@@ -160,6 +170,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Zoom explosivo rápido tipo transición impactante',
     categoria: 'transition',
     movimientos: [{ tipo: 'zoom_in', peso: 1.9 }],
+    planoRecomendado: 'close_up',
     fpsRecomendado: 12,
     duracionRecomendada: 2,
     modelosCompatibles: ['animatediff', 'wan', 'ltx', 'kling']
@@ -170,6 +181,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Retroceso revelador tipo "y entonces vemos..."',
     categoria: 'transition',
     movimientos: [{ tipo: 'dolly_backward', peso: 1.4 }, { tipo: 'zoom_out', peso: 0.6 }],
+    planoRecomendado: 'close_up',
     fpsRecomendado: 8,
     duracionRecomendada: 3,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
@@ -212,6 +224,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Cielo y nubes en movimiento acelerado',
     categoria: 'atmospheric',
     movimientos: [{ tipo: 'static', peso: 1.0 }],
+    planoRecomendado: 'extreme_wide',
     fpsRecomendado: 12,
     duracionRecomendada: 4,
     modelosCompatibles: ['animatediff', 'wan', 'ltx', 'svd', 'cogvideo']
@@ -232,6 +245,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Transición de enfoque en fotografía macro',
     categoria: 'atmospheric',
     movimientos: [{ tipo: 'dolly_forward', peso: 0.5 }, { tipo: 'zoom_in', peso: 0.3 }],
+    planoRecomendado: 'extreme_close',
     fpsRecomendado: 8,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
@@ -252,6 +266,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Avance lento entre niebla revelando escena',
     categoria: 'atmospheric',
     movimientos: [{ tipo: 'dolly_forward', peso: 0.4 }, { tipo: 'tilt_down', peso: 0.2 }],
+    planoRecomendado: 'wide',
     fpsRecomendado: 6,
     duracionRecomendada: 5,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
@@ -264,6 +279,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Avance imponente hacia el protagonista',
     categoria: 'dramatic',
     movimientos: [{ tipo: 'dolly_forward', peso: 1.3 }, { tipo: 'tilt_up', peso: 0.4 }],
+    planoRecomendado: 'low_angle',
     fpsRecomendado: 8,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -274,6 +290,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Tilt descendente amenazante tipo villano',
     categoria: 'dramatic',
     movimientos: [{ tipo: 'tilt_down', peso: 1.2 }, { tipo: 'zoom_in', peso: 0.5 }],
+    planoRecomendado: 'high_angle',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -284,6 +301,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Retroceso + tilt up revelando paisaje grandioso',
     categoria: 'dramatic',
     movimientos: [{ tipo: 'dolly_backward', peso: 1.0 }, { tipo: 'tilt_up', peso: 0.8 }],
+    planoRecomendado: 'wide',
     fpsRecomendado: 6,
     duracionRecomendada: 5,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -294,6 +312,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Zoom lento que genera tensión psicológica',
     categoria: 'dramatic',
     movimientos: [{ tipo: 'zoom_in', peso: 1.1 }],
+    planoRecomendado: 'close_up',
     fpsRecomendado: 6,
     duracionRecomendada: 5,
     modelosCompatibles: ['svd', 'wan', 'kling', 'luma', 'ltx', 'minimax', 'cogvideo']
@@ -304,6 +323,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Tilt down + zoom out tipo final trágico',
     categoria: 'dramatic',
     movimientos: [{ tipo: 'tilt_down', peso: 0.9 }, { tipo: 'zoom_out', peso: 0.7 }],
+    planoRecomendado: 'high_angle',
     fpsRecomendado: 6,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax', 'svd']
@@ -316,6 +336,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Rotación tipo ángulo holandés inquietante',
     categoria: 'experimental',
     movimientos: [{ tipo: 'roll_clockwise', peso: 0.8 }, { tipo: 'tilt_up', peso: 0.3 }],
+    planoRecomendado: 'dutch_angle',
     fpsRecomendado: 8,
     duracionRecomendada: 3,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'animatediff']
@@ -341,6 +362,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Rotación + zoom creando efecto hipnótico',
     categoria: 'experimental',
     movimientos: [{ tipo: 'roll_clockwise', peso: 1.0 }, { tipo: 'zoom_in', peso: 0.7 }],
+    planoRecomendado: 'close_up',
     fpsRecomendado: 8,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'animatediff']
@@ -361,6 +383,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Movimiento flotante tipo transición de sueño',
     categoria: 'experimental',
     movimientos: [{ tipo: 'zoom_out', peso: 0.4 }, { tipo: 'roll_counter', peso: 0.3 }, { tipo: 'tilt_up', peso: 0.2 }],
+    planoRecomendado: 'medium',
     fpsRecomendado: 6,
     duracionRecomendada: 5,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']
@@ -371,6 +394,7 @@ export const VIDEO_STYLE_PRESETS = [
     descripcion: 'Simulación de cámara subjetiva POV',
     categoria: 'experimental',
     movimientos: [{ tipo: 'dolly_forward', peso: 0.7 }, { tipo: 'pan_right', peso: 0.3 }, { tipo: 'tilt_down', peso: 0.2 }],
+    planoRecomendado: 'pov',
     fpsRecomendado: 12,
     duracionRecomendada: 4,
     modelosCompatibles: ['wan', 'kling', 'luma', 'ltx', 'minimax']

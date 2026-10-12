@@ -152,7 +152,7 @@ export default function VideoStyleLibrary({ onApplyPreset, modeloSeleccionado })
               {/* Descripción */}
               <p className="text-xs text-slate-400 mb-2">{preset.descripcion}</p>
 
-              {/* Fila inferior: parámetros + modelos compatibles */}
+              {/* Fila inferior: parámetros + plano + modelos compatibles */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs text-slate-500">
                   <span>{preset.fpsRecomendado} FPS</span>
@@ -160,6 +160,12 @@ export default function VideoStyleLibrary({ onApplyPreset, modeloSeleccionado })
                   <span>{preset.duracionRecomendada}s</span>
                   <span>•</span>
                   <span>{preset.movimientos.length} mov.</span>
+                  {preset.planoRecomendado && (
+                    <>
+                      <span>•</span>
+                      <span className="text-amber-400/70">📷 plano</span>
+                    </>
+                  )}
                 </div>
                 <div className="flex items-center gap-0.5">
                   {preset.modelosCompatibles.slice(0, 5).map(m => (

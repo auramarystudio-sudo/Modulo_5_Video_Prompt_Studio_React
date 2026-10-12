@@ -6,6 +6,7 @@
  */
 import { useState } from 'react';
 import MotionBuilder from './MotionBuilder';
+import ShotTypeSelector from './ShotTypeSelector';
 import KeyframeManager from './KeyframeManager';
 import VideoCalculator from './VideoCalculator';
 import VideoStyleLibrary from './VideoStyleLibrary';
@@ -18,6 +19,7 @@ export default function VideoStudio() {
   const [promptBase, setPromptBase] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [movimientosSeleccionados, setMovimientosSeleccionados] = useState([]);
+  const [planoSeleccionado, setPlanoSeleccionado] = useState(null); // Plano de cámara (encuadre)
   const [keyframeInicial, setKeyframeInicial] = useState('');
   const [keyframeFinal, setKeyframeFinal] = useState('');
   const [fps, setFps] = useState(6);
@@ -40,12 +42,17 @@ export default function VideoStudio() {
    * Aplica un preset de la biblioteca al estado
    * Los presets son modelo-agnósticos: se aplican los movimientos
    * y se sugieren parámetros técnicos, pero se respeta el modelo activo del usuario
+   * Si el preset tiene planoRecomendado, también se aplica
    */
   const aplicarPreset = (preset) => {
     setPresetActivo(preset);
     // Aplicar FPS y duración recomendados del preset
     setFps(preset.fpsRecomendado);
     setDuracion(preset.duracionRecomendada);
+    // Aplicar plano recomendado si existe
+    if (preset.planoRecomendado) {
+      setPlanoSeleccionado(preset.planoRecomendado);
+    }
     // Convertir movimientos del preset al formato interno
     const movimientos = preset.movimientos.map((m, i) => ({
       id: Date.now() + i,
@@ -107,7 +114,14 @@ export default function VideoStudio() {
       <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
         {/* ═══ Columna Izquierda (70%) ═══ */}
         <div className="space-y-6">
-          {/* Motion Builder */}
+          {/* Shot Type Selector - Plano de Cámara */}
+          <ShotTypeSelector
+            planoSeleccionado={planoSeleccionado}
+            setPlanoSeleccionado={setPlanoSeleccionado}
+            modeloSeleccionado={modeloSeleccionado}
+          />
+
+          {/* Motion Builder - Movimientos de Cámara */}
           <MotionBuilder
             movimientosSeleccionados={movimientosSeleccionados}
             setMovimientosSeleccionados={setMovimientosSeleccionados}
@@ -128,6 +142,7 @@ export default function VideoStudio() {
             promptBase={promptBase}
             negativePrompt={negativePrompt}
             movimientosSeleccionados={movimientosSeleccionados}
+            planoSeleccionado={planoSeleccionado}
             keyframeInicial={keyframeInicial}
             keyframeFinal={keyframeFinal}
             fps={fps}
