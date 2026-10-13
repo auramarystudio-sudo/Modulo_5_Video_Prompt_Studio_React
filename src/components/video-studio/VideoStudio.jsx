@@ -1,25 +1,29 @@
 /**
  * VideoStudio - Componente principal del Video Prompt Studio
- * Layout 2 columnas: izquierda (70%) con Motion Builder + Keyframes + Output
- * Derecha (30%) con Calculator + Style Library + Model Compatibility
+ * Layout 2 columnas: izquierda (70%) con Composición + Motion Builder + Keyframes + Output
+ * Derecha (30%) con Calculator + Style Library + Model Compatibility + Negativos
  * Soporta 8 modelos: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX 2.3, CogVideoX
  */
 import { useState } from 'react';
 import MotionBuilder from './MotionBuilder';
-import ShotTypeSelector from './ShotTypeSelector';
+import MotionPreview from './MotionPreview';
+import ShotTypeBuilder from './ShotTypeBuilder';
 import KeyframeManager from './KeyframeManager';
 import VideoCalculator from './VideoCalculator';
 import VideoStyleLibrary from './VideoStyleLibrary';
 import ModelCompatibility from './ModelCompatibility';
+import VideoNegativePresets from './VideoNegativePresets';
 import VideoOutput from './VideoOutput';
-import { getFpsRecomendado, getDuracionRecomendada } from '../../utils/video-calculator';
+import { getFpsRecomendado } from '../../utils/video-calculator';
 
 export default function VideoStudio() {
   // ═══ Estado global del Video Studio ═══
   const [promptBase, setPromptBase] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [movimientosSeleccionados, setMovimientosSeleccionados] = useState([]);
-  const [planoSeleccionado, setPlanoSeleccionado] = useState(null); // Plano de cámara (encuadre)
+  const [planoSeleccionado, setPlanoSeleccionado] = useState(null);
+  const [lenteSeleccionada, setLenteSeleccionada] = useState(null);
+  const [aspectRatio, setAspectRatio] = useState('16:9');
   const [keyframeInicial, setKeyframeInicial] = useState('');
   const [keyframeFinal, setKeyframeFinal] = useState('');
   const [fps, setFps] = useState(6);
@@ -29,10 +33,8 @@ export default function VideoStudio() {
 
   /**
    * Placeholder: Recibir prompt del generador (Módulo 3)
-   * EN EL FUTURO: Leer de contexto compartido o URL params
    */
   const recibirPromptDelGenerador = () => {
-    // Simular con prompt de ejemplo
     setPromptBase("mujer guerrera con armadura, cinematic lighting, dramatic atmosphere");
     setNegativePrompt("ugly, blurry, low quality, deformed");
     setKeyframeInicial("mujer guerrera con armadura, cinematic lighting, dramatic atmosphere");
@@ -40,28 +42,18 @@ export default function VideoStudio() {
 
   /**
    * Aplica un preset de la biblioteca al estado
-   * Los presets son modelo-agnósticos: se aplican los movimientos
-   * y se sugieren parámetros técnicos, pero se respeta el modelo activo del usuario
-   * Si el preset tiene planoRecomendado, también se aplica
+   * Los presets son modelo-agnósticos: aplican movimientos y sugieren parámetros
    */
   const aplicarPreset = (preset) => {
     setPresetActivo(preset);
-    // Aplicar FPS y duración recomendados del preset
     setFps(preset.fpsRecomendado);
     setDuracion(preset.duracionRecomendada);
-    // Aplicar plano recomendado si existe
-    if (preset.planoRecomendado) {
-      setPlanoSeleccionado(preset.planoRecomendado);
-    }
-    // Convertir movimientos del preset al formato interno
     const movimientos = preset.movimientos.map((m, i) => ({
       id: Date.now() + i,
       tipo: m.tipo,
       peso: m.peso
     }));
     setMovimientosSeleccionados(movimientos);
-    // NO cambiar el modelo: el preset es compatible con múltiples modelos
-    // El usuario mantiene su modelo seleccionado
   };
 
   return (
@@ -71,7 +63,7 @@ export default function VideoStudio() {
         <div>
           <h2 className="text-2xl font-bold text-slate-100">🎬 Video Prompt Studio</h2>
           <p className="text-sm text-slate-400">
-            8 modelos IA • 30+ estilos • Movimientos universales adaptados a cada modelo
+            8 modelos IA • Planos + Movimientos + Lentes • 30+ estilos
           </p>
         </div>
         <button
@@ -114,19 +106,26 @@ export default function VideoStudio() {
       <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
         {/* ═══ Columna Izquierda (70%) ═══ */}
         <div className="space-y-6">
-          {/* Shot Type Selector - Plano de Cámara */}
-          <ShotTypeSelector
+          {/* Composición de Plano (Planos + Lentes + Aspect Ratio) */}
+          <ShotTypeBuilder
             planoSeleccionado={planoSeleccionado}
             setPlanoSeleccionado={setPlanoSeleccionado}
+            lenteSeleccionada={lenteSeleccionada}
+            setLenteSeleccionada={setLenteSeleccionada}
+            aspectRatio={aspectRatio}
+            setAspectRatio={setAspectRatio}
             modeloSeleccionado={modeloSeleccionado}
           />
 
-          {/* Motion Builder - Movimientos de Cámara */}
+          {/* Motion Builder */}
           <MotionBuilder
             movimientosSeleccionados={movimientosSeleccionados}
             setMovimientosSeleccionados={setMovimientosSeleccionados}
             modeloSeleccionado={modeloSeleccionado}
           />
+
+          {/* Preview visual animado */}
+          <MotionPreview movimientosSeleccionados={movimientosSeleccionados} />
 
           {/* Keyframe Manager */}
           <KeyframeManager
@@ -143,6 +142,8 @@ export default function VideoStudio() {
             negativePrompt={negativePrompt}
             movimientosSeleccionados={movimientosSeleccionados}
             planoSeleccionado={planoSeleccionado}
+            lenteSeleccionada={lenteSeleccionada}
+            aspectRatio={aspectRatio}
             keyframeInicial={keyframeInicial}
             keyframeFinal={keyframeFinal}
             fps={fps}
@@ -166,6 +167,12 @@ export default function VideoStudio() {
           {/* Style Library */}
           <VideoStyleLibrary onApplyPreset={aplicarPreset} modeloSeleccionado={modeloSeleccionado} />
 
+          {/* Video Negative Presets */}
+          <VideoNegativePresets
+            negativePrompt={negativePrompt}
+            setNegativePrompt={setNegativePrompt}
+          />
+
           {/* Model Compatibility */}
           <ModelCompatibility modeloSeleccionado={modeloSeleccionado} />
         </div>
@@ -181,8 +188,8 @@ export default function VideoStudio() {
               </p>
               <p className="text-xs text-slate-400 mt-0.5">{presetActivo.descripcion}</p>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs text-slate-500">Compatible con:</span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-xs text-slate-500">Compatible:</span>
               {presetActivo.modelosCompatibles.map(m => (
                 <span
                   key={m}
