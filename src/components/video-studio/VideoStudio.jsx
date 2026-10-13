@@ -1,10 +1,15 @@
 /**
  * VideoStudio - Componente principal del Video Prompt Studio
- * Layout 2 columnas: izquierda (70%) con Composición + Motion Builder + Keyframes + Output
- * Derecha (30%) con Calculator + Style Library + Model Compatibility + Negativos
- * Soporta 8 modelos: SVD, AnimateDiff, Kling, Luma, Wan 2.1/2.2, MiniMax H3, LTX 2.3, CogVideoX
+ * Integra todas las funcionalidades: Wizard, Recetas, Templates, Validador, Historial, Estimador
+ * Layout optimizado para usuarios novatos con guías claras
  */
 import { useState } from 'react';
+import Wizard from './Wizard';
+import VideoRecipes from './VideoRecipes';
+import UseCaseTemplates from './UseCaseTemplates';
+import PromptValidator from './PromptValidator';
+import RenderEstimator from './RenderEstimator';
+import ConfigHistory from './ConfigHistory';
 import MotionBuilder from './MotionBuilder';
 import MotionPreview from './MotionPreview';
 import ShotTypeBuilder from './ShotTypeBuilder';
@@ -14,10 +19,10 @@ import VideoStyleLibrary from './VideoStyleLibrary';
 import ModelCompatibility from './ModelCompatibility';
 import VideoNegativePresets from './VideoNegativePresets';
 import VideoOutput from './VideoOutput';
-import { getFpsRecomendado } from '../../utils/video-calculator';
+import { calcularParametrosVideo } from '../../utils/video-calculator';
 
 export default function VideoStudio() {
-  // ═══ Estado global del Video Studio ═══
+  // ═══ Estado global ═══
   const [promptBase, setPromptBase] = useState('');
   const [negativePrompt, setNegativePrompt] = useState('');
   const [movimientosSeleccionados, setMovimientosSeleccionados] = useState([]);
@@ -30,9 +35,13 @@ export default function VideoStudio() {
   const [duracion, setDuracion] = useState(4);
   const [modeloSeleccionado, setModeloSeleccionado] = useState('svd');
   const [presetActivo, setPresetActivo] = useState(null);
+  const [mostrarWizard, setMostrarWizard] = useState(false);
+
+  // Calcular parámetros para validador y estimador
+  const params = calcularParametrosVideo(fps, duracion, modeloSeleccionado);
 
   /**
-   * Placeholder: Recibir prompt del generador (Módulo 3)
+   * Placeholder: Recibir prompt del generador
    */
   const recibirPromptDelGenerador = () => {
     setPromptBase("mujer guerrera con armadura, cinematic lighting, dramatic atmosphere");
@@ -41,8 +50,7 @@ export default function VideoStudio() {
   };
 
   /**
-   * Aplica un preset de la biblioteca al estado
-   * Los presets son modelo-agnósticos: aplican movimientos y sugieren parámetros
+   * Aplica un preset de la biblioteca
    */
   const aplicarPreset = (preset) => {
     setPresetActivo(preset);
@@ -56,23 +64,120 @@ export default function VideoStudio() {
     setMovimientosSeleccionados(movimientos);
   };
 
+  /**
+   * Aplica una receta completa
+   */
+  const aplicarReceta = (recipe) => {
+    setPlanoSeleccionado(recipe.plano);
+    setLenteSeleccionada(recipe.lente);
+    setAspectRatio(recipe.aspectRatio);
+    const movimientos = recipe.movimientos.map((m, i) => ({
+      id: Date.now() + i,
+      tipo: m.tipo,
+      peso: m.peso
+    }));
+    setMovimientosSeleccionados(movimientos);
+    setPresetActivo({ nombre: recipe.nombre, descripcion: recipe.descripcion, modelosCompatibles: ['all'] });
+  };
+
+  /**
+   * Aplica un template por caso de uso
+   */
+  const aplicarTemplate = (template) => {
+    const config = template.config;
+    setModeloSeleccionado(config.modelo);
+    setFps(config.fps);
+    setDuracion(config.duracion);
+    setAspectRatio(config.aspectRatio);
+    setPlanoSeleccionado(config.plano);
+    setLenteSeleccionada(config.lente);
+    const movimientos = config.movimientos.map((m, i) => ({
+      id: Date.now() + i,
+      tipo: m.tipo,
+      peso: m.peso
+    }));
+    setMovimientosSeleccionados(movimientos);
+    if (config.promptSugerido) setPromptBase(config.promptSugerido);
+    if (config.negativeSugerido) setNegativePrompt(config.negativeSugerido);
+    setPresetActivo({ nombre: template.nombre, descripcion: template.descripcion, modelosCompatibles: [config.modelo] });
+  };
+
+  /**
+   * Aplica recomendación del wizard
+   */
+  const aplicarRecomendacionWizard = (recomendacion) => {
+    setModeloSeleccionado(recomendacion.modelo);
+    setFps(recomendacion.fps);
+    setDuracion(recomendacion.duracion);
+  };
+
+  /**
+   * Carga configuración del historial
+   */
+  const cargarConfiguracion = (config) => {
+    if (config.promptBase) setPromptBase(config.promptBase);
+    if (config.negativePrompt) setNegativePrompt(config.negativePrompt);
+    if (config.modeloSeleccionado) setModeloSeleccionado(config.modeloSeleccionado);
+    if (config.fps) setFps(config.fps);
+    if (config.duracion) setDuracion(config.duracion);
+    if (config.aspectRatio) setAspectRatio(config.aspectRatio);
+    if (config.planoSeleccionado) setPlanoSeleccionado(config.planoSeleccionado);
+    if (config.lenteSeleccionada) setLenteSeleccionada(config.lenteSeleccionada);
+    if (config.movimientosSeleccionados) setMovimientosSeleccionados(config.movimientosSeleccionados);
+    if (config.keyframeInicial) setKeyframeInicial(config.keyframeInicial);
+    if (config.keyframeFinal) setKeyframeFinal(config.keyframeFinal);
+  };
+
+  // Configuración actual para validador e historial
+  const configuracionActual = {
+    movimientosSeleccionados,
+    planoSeleccionado,
+    modeloSeleccionado,
+    keyframeInicial,
+    keyframeFinal,
+    fps,
+    duracion,
+    promptBase,
+    negativePrompt,
+    aspectRatio,
+    lenteSeleccionada
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 p-4 md:p-6">
-      {/* Header del Studio */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-3">
         <div>
           <h2 className="text-2xl font-bold text-slate-100">🎬 Video Prompt Studio</h2>
           <p className="text-sm text-slate-400">
-            8 modelos IA • Planos + Movimientos + Lentes • 30+ estilos
+            8 modelos IA • Planos + Movimientos + Lentes • 30+ estilos • Guías para novatos
           </p>
         </div>
-        <button
-          onClick={recibirPromptDelGenerador}
-          className="flex items-center gap-2 px-4 py-2 text-sm bg-violet-900/50 text-violet-300 border border-violet-700 rounded-lg hover:bg-violet-800/50 transition-colors"
-        >
-          ✨ Importar desde Generador
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setMostrarWizard(!mostrarWizard)}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-violet-600 text-white rounded-lg hover:bg-violet-500 transition-colors"
+          >
+            🧙 Asistente
+          </button>
+          <button
+            onClick={recibirPromptDelGenerador}
+            className="flex items-center gap-2 px-4 py-2 text-sm bg-violet-900/50 text-violet-300 border border-violet-700 rounded-lg hover:bg-violet-800/50 transition-colors"
+          >
+            ✨ Importar
+          </button>
+        </div>
       </div>
+
+      {/* Wizard */}
+      {mostrarWizard && (
+        <div className="mb-6">
+          <Wizard
+            onApplyRecommendation={aplicarRecomendacionWizard}
+            onClose={() => setMostrarWizard(false)}
+          />
+        </div>
+      )}
 
       {/* Prompt Base Input */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-4 mb-6">
@@ -102,11 +207,10 @@ export default function VideoStudio() {
         </div>
       </div>
 
-      {/* Layout principal: 2 columnas */}
+      {/* Layout principal */}
       <div className="grid grid-cols-1 lg:grid-cols-[70%_30%] gap-6">
-        {/* ═══ Columna Izquierda (70%) ═══ */}
+        {/* Columna Izquierda (70%) */}
         <div className="space-y-6">
-          {/* Composición de Plano (Planos + Lentes + Aspect Ratio) */}
           <ShotTypeBuilder
             planoSeleccionado={planoSeleccionado}
             setPlanoSeleccionado={setPlanoSeleccionado}
@@ -116,18 +220,12 @@ export default function VideoStudio() {
             setAspectRatio={setAspectRatio}
             modeloSeleccionado={modeloSeleccionado}
           />
-
-          {/* Motion Builder */}
           <MotionBuilder
             movimientosSeleccionados={movimientosSeleccionados}
             setMovimientosSeleccionados={setMovimientosSeleccionados}
             modeloSeleccionado={modeloSeleccionado}
           />
-
-          {/* Preview visual animado */}
           <MotionPreview movimientosSeleccionados={movimientosSeleccionados} />
-
-          {/* Keyframe Manager */}
           <KeyframeManager
             keyframeInicial={keyframeInicial}
             setKeyframeInicial={setKeyframeInicial}
@@ -135,8 +233,6 @@ export default function VideoStudio() {
             setKeyframeFinal={setKeyframeFinal}
             modeloSeleccionado={modeloSeleccionado}
           />
-
-          {/* Video Output */}
           <VideoOutput
             promptBase={promptBase}
             negativePrompt={negativePrompt}
@@ -152,9 +248,8 @@ export default function VideoStudio() {
           />
         </div>
 
-        {/* ═══ Columna Derecha (30%) ═══ */}
+        {/* Columna Derecha (30%) */}
         <div className="space-y-6">
-          {/* Video Calculator */}
           <VideoCalculator
             fps={fps}
             setFps={setFps}
@@ -163,47 +258,33 @@ export default function VideoStudio() {
             modeloSeleccionado={modeloSeleccionado}
             setModeloSeleccionado={setModeloSeleccionado}
           />
-
-          {/* Style Library */}
+          <VideoRecipes onApplyRecipe={aplicarReceta} />
+          <UseCaseTemplates onApplyTemplate={aplicarTemplate} />
           <VideoStyleLibrary onApplyPreset={aplicarPreset} modeloSeleccionado={modeloSeleccionado} />
-
-          {/* Video Negative Presets */}
           <VideoNegativePresets
             negativePrompt={negativePrompt}
             setNegativePrompt={setNegativePrompt}
           />
-
-          {/* Model Compatibility */}
+          <PromptValidator configuracion={configuracionActual} />
+          <RenderEstimator
+            modeloSeleccionado={modeloSeleccionado}
+            framesTotales={params.framesTotales}
+            aspectRatio={aspectRatio}
+          />
+          <ConfigHistory
+            configuracionActual={configuracionActual}
+            onLoadConfig={cargarConfiguracion}
+          />
           <ModelCompatibility modeloSeleccionado={modeloSeleccionado} />
         </div>
       </div>
 
-      {/* Preset activo indicator */}
+      {/* Preset activo */}
       {presetActivo && (
         <div className="mt-6 bg-violet-900/20 border border-violet-800/50 rounded-lg p-3">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div>
-              <p className="text-sm text-violet-300">
-                🎯 Preset activo: <strong>{presetActivo.nombre}</strong>
-              </p>
-              <p className="text-xs text-slate-400 mt-0.5">{presetActivo.descripcion}</p>
-            </div>
-            <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-xs text-slate-500">Compatible:</span>
-              {presetActivo.modelosCompatibles.map(m => (
-                <span
-                  key={m}
-                  className={`text-[10px] px-1.5 py-0.5 rounded ${
-                    m === modeloSeleccionado
-                      ? 'bg-violet-600 text-white'
-                      : 'bg-slate-800 text-slate-400'
-                  }`}
-                >
-                  {m.toUpperCase()}
-                </span>
-              ))}
-            </div>
-          </div>
+          <p className="text-sm text-violet-300">
+            🎯 Activo: <strong>{presetActivo.nombre}</strong> — {presetActivo.descripcion}
+          </p>
         </div>
       )}
     </div>
